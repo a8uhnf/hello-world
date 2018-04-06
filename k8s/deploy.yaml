@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hello-world
+  namespace: kube-system
+  labels: 
+    app: hello-world
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-world
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      containers:
+      - name: hello-world
+        image: a8uhnf/go:1.0
+        ports:
+        - containerPort: 8080
+          name: web
+        volumeMounts:
+        - name: hello
+          mountPath: /hello/hello
+          readOnly: true
+      volumes:
+      - name: hello
+        secret:
+          secretName: db-user-pass
+
