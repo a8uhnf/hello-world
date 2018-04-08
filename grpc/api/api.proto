@@ -4,6 +4,7 @@ package api;
 import "google/api/annotations.proto";
 message PingMessage {
   string greeting = 1;
+  int32 countMe = 2;
 }
 service Ping {
   rpc SayHello(PingMessage) returns (PingMessage) {

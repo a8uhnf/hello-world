@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: kube-system
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: frontend
+        track: stable
+    spec:
+      containers:
+        - name: nginx
+          image: "nginx:1.9.14"
+          imagePullPolicy: Always
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/sbin/nginx","-s","quit"]
+          volumeMounts:
+            - name: "nginx-frontend-conf"
+              mountPath: "/etc/nginx/conf.d"
+      volumes:
+        - name: "nginx-frontend-conf"
+          configMap:
+            name: "nginx-frontend-conf"
+            items:
+              - key: "front.conf"
+                path: "front.conf"

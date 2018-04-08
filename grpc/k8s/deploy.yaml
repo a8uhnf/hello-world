@@ -3,13 +3,8 @@ kind: Deployment
 metadata:
   name: hanifa-test
   namespace: kube-system
-  labels:
-    app: hanifa-test
 spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: hanifa-test
+  replicas: 1
   template:
     metadata:
       labels:
