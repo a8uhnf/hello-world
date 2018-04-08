@@ -72,10 +72,6 @@ func startGRPCServer(address string) error {
 	if err != nil {
 		return fmt.Errorf("could not load TLS keys: %s", err)
 	}
-	// Create an array of gRPC options with the credentials
-	// opts := []grpc.ServerOption{grpc.Creds(creds),
-	// grpc.UnaryInterceptor(unaryInterceptor)}
-	// create a gRPC server object
 	grpcServer := grpc.NewServer()
 	// attach the Ping service to the server
 	api.RegisterPingServer(grpcServer, &s)
@@ -111,8 +107,6 @@ func startRESTServer(address, grpcAddress string) error {
 func main() {
 	grpcAddress := fmt.Sprintf("%s:%d", "localhost", 7777)
 	restAddress := fmt.Sprintf("%s:%d", "localhost", 7778)
-	// certFile := "cert/server.crt"
-	// keyFile := "cert/server.key"
 	// fire the gRPC server in a goroutine
 	go func() {
 		err := startGRPCServer(grpcAddress)
