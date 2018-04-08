@@ -1,4 +1,4 @@
 FROM scratch
 EXPOSE 7778
-COPY server /
-CMD ["/server"]
+COPY grpc-server /
+CMD ["/grpc-server"]

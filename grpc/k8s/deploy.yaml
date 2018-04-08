@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hanifa-test
+  namespace: kube-system
+  labels:
+    app: hanifa-test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hanifa-test
+  template:
+    metadata:
+      labels:
+        app: hanifa-test
+    spec:
+      containers:
+      - name: hanifa-test
+        image: a8uhnf/grpc-server:1.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 7778
+          name: web
