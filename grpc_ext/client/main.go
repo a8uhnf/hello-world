@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/a8uhnf/hello-world/grpc_ext/api"
@@ -11,9 +12,11 @@ import (
 
 func main() {
 	fmt.Println("Hello World!!!")
+	host := os.Getenv("ECHO_SERVICE_HOST")
+	port := os.Getenv("ECHO_SERVICE_PORT")
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
-	conn, err := grpc.Dial(":65000", opts...)
+	conn, err := grpc.Dial(fmt.Sprintf("%s:%s", host, port), opts...)
 	if err != nil {
 		panic(nil)
 	}
