@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: echo-server
-        image: saturnism/echo-server
+        image: a8uhnf/grpc_ext_server:1.0
 ---
 apiVersion: v1
 kind: Service

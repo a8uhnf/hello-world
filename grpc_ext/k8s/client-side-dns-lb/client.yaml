@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: echo-client
-        image: saturnism/echo-client-lb-dns
+        image: a8uhnf/grpc_ext_client:1.0
         env:
         - name: ECHO_SERVICE_TARGET
           value: dns:///echo-server:8080
