@@ -12,6 +12,7 @@ PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 all: server client
 
 api/api.pb.go: api/api.proto
+	echo "Hello World!!!"
 	@protoc -I api/ \
 		-I${GOPATH}/src \
 		-I${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
