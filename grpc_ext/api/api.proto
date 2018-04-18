@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package api;
+
+service HelloHanifa {
+    rpc HelloHanifa(HelloReq) returns (HelloResp) {};
+}
+
+message HelloReq {
+    string name = 1;
+}
+
+message HelloResp {
+    int32 count = 1;
+}
