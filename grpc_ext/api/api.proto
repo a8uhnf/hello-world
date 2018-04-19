@@ -12,4 +12,5 @@ message HelloReq {
 
 message HelloResp {
     int32 count = 1;
+    string podname = 2;
 }

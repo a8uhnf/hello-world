@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"os"
 
 	"golang.org/x/net/context"
 )
@@ -14,5 +15,6 @@ func (s Server) HelloHanifa(ctx context.Context, req *HelloReq) (*HelloResp, err
 	count++
 	fmt.Println("-----------------------------------")
 	fmt.Println(req.Name)
-	return &HelloResp{Count: int32(count)}, nil
+
+	return &HelloResp{Count: int32(count), Podname: os.Getenv("MY_POD_NAME")}, nil
 }
