@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hello-logger
+  namespace: kube-system
+  labels: 
+    app: hello-logger
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-logger
+  template:
+    metadata:
+      labels:
+        app: hello-logger
+    spec:
+      containers:
+      - name: hello-logger
+        image: a8uhnf/logger:1.0
+        imagePullPolicy: Always
+
