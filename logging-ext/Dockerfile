@@ -1,4 +1,4 @@
 FROM scratch
 EXPOSE 8080
-COPY go /
-CMD ["/go"]
+COPY logging-ext /
+CMD ["/logging-ext"]
