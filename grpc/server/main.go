@@ -5,14 +5,12 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"strings"
 
 	"github.com/a8uhnf/hello-world/grpc/api"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	// "google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/metadata"
 )
 
 // private type for Context keys
@@ -29,36 +27,6 @@ func credMatcher(headerName string) (mdName string, ok bool) {
 	return "", false
 }
 
-// authenticateAgent check the client credentials
-func authenticateClient(ctx context.Context, s *api.Server) (string, error) {
-	if md, ok := metadata.FromIncomingContext(ctx); ok {
-		clientLogin := strings.Join(md["login"], "")
-		clientPassword := strings.Join(md["password"], "")
-		if clientLogin != "john" {
-			return "", fmt.Errorf("unknown user %s", clientLogin)
-		}
-		if clientPassword != "doe" {
-			return "", fmt.Errorf("bad password %s", clientPassword)
-		}
-		log.Printf("authenticated client: %s", clientLogin)
-		return "42", nil
-	}
-	return "", fmt.Errorf("missing credentials")
-}
-
-// unaryInterceptor call authenticateClient with current context
-func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	s, ok := info.Server.(*api.Server)
-	if !ok {
-		return nil, fmt.Errorf("unable to cast server")
-	}
-	clientID, err := authenticateClient(ctx, s)
-	if err != nil {
-		return nil, err
-	}
-	ctx = context.WithValue(ctx, clientIDKey, clientID)
-	return handler(ctx, req)
-}
 func startGRPCServer(address string) error {
 	// create a listener on TCP port
 	lis, err := net.Listen("tcp", address)
