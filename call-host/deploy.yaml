@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: call-host
+  namespace: call-host
+  labels: 
+    app: call-host
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: call-host
+  template:
+    metadata:
+      labels:
+        app: call-host
+    spec:
+      containers:
+      - name: call-host
+        image: a8uhnf/call-host:1.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: web
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: call-host
+  namespace: call-host
+spec:
+  selector:
+    app: call-host
+  ports:
+  - port: 80
+    targetPort: 8080
+  type: LoadBalancer
