@@ -17,5 +17,5 @@ func main() {
 	fmt.Println("Server Started....")
 	http.HandleFunc("/hello", handler)
 	http.Handle("/metrics", promhttp.Handler())
-	http.ListenAndServe(":8082", nil)
+	log.Fatal(http.ListenAndServe(":8087", nil))
 }

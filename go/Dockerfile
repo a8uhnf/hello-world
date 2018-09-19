@@ -1,4 +1,4 @@
 FROM scratch
-EXPOSE 8080
+EXPOSE 8087
 COPY go /
 CMD ["/go"]

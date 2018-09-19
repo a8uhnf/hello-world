@@ -19,11 +19,11 @@ spec:
     spec:
       containers:
       - name: hello-go2
-        image: a8uhnf/go:2.0
+        image: a8uhnf/go:3.0
         imagePullPolicy: Always
         ports:
         - name: hello
-          containerPort: 8080
+          containerPort: 8087
 ---
 kind: Service
 apiVersion: v1
@@ -37,8 +37,8 @@ spec:
     app: "hello-go2"
   ports:
     - protocol: "TCP"
-      port: 8080
-      targetPort: 8080
+      port: 80
+      targetPort: 8087
   type: LoadBalancer
 
 
