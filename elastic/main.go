@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"reflect"
 	"time"
 
-	"github.com/olivere/elastic"
+	elastic "gopkg.in/olivere/elastic.v5"
 )
 
 // Tweet is a structure used for serializing/deserializing data in Elasticsearch.
@@ -153,16 +154,35 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	for {
-		d, err := client.Get().Index("twitter").Type("tweet").Id("1").Do(ctx)
-		if err != nil {
-			panic(err)
+	if g := os.Getenv("INDEX"); g == "1" {
+		for {
+			d, err := client.Get().Index("twitter").Type("tweet").Id("1").Do(ctx)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println("------ ", d)
 		}
-		fmt.Println("------ ", d)
 	}
 
-	// Search with a term query
+	if g := os.Getenv("SEARCH"); g == "1" {
+		// Search with a term query
+		for {
+			tmp := elastic.NewTermQuery("user", "olivere")
+			sResult, err := client.Search().
+				Index("twitter").   // search in index "twitter"
+				Query(tmp).         // specify the query
+				Sort("user", true). // sort by "user" field, ascending
+				From(0).Size(10).   // take documents 0-9
+				Pretty(true).       // pretty print request and response JSON
+				Do(ctx)             // execute
+			if err != nil {
+				// Handle error
+				panic(err)
+			}
+			fmt.Println("sRe----", sResult)
+		}
+	}
+
 	termQuery := elastic.NewTermQuery("user", "olivere")
 	searchResult, err := client.Search().
 		Index("twitter").   // search in index "twitter"
@@ -175,7 +195,6 @@ func main() {
 		// Handle error
 		panic(err)
 	}
-
 	// searchResult is of type SearchResult and returns hits, suggestions,
 	// and all kinds of other information from Elasticsearch.
 	fmt.Printf("Query took %d milliseconds\n", searchResult.TookInMillis)
@@ -218,16 +237,28 @@ func main() {
 
 	// Update a tweet by the update API of Elasticsearch.
 	// We just increment the number of retweets.
-	update, err := client.Update().Index("twitter").Type("tweet").Id("1").
-		Script(elastic.NewScriptInline("ctx._source.retweets += params.num").Lang("painless").Param("num", 1)).
-		Upsert(map[string]interface{}{"retweets": 0}).
-		Do(ctx)
-	if err != nil {
-		// Handle error
-		panic(err)
+	// update, err := client.Update().Index("twitter").Type("tweet").Id("1").
+	// 	Script(elastic.NewScriptInline("ctx._source.retweets += params.num").Lang("painless").Param("num", 1)).
+	// 	Upsert(map[string]interface{}{"retweets": 0}).
+	// 	Do(ctx)
+	// if err != nil {
+	// 	// Handle error
+	// 	panic(err)
+	// }
+	if g := os.Getenv("UPDATE"); g == "1" {
+		for {
+			script := elastic.NewScript("ctx._source.retweets += params.num").Param("num", 1)
+			update, err := client.Update().Index("twitter").Type("tweet").Id("1").
+				Script(script).
+				Upsert(map[string]interface{}{"retweets": 0}).
+				Do(context.Background())
+			if err != nil {
+				// Handle error
+				panic(err)
+			}
+			fmt.Printf("New version of tweet %q is now %d\n", update.Id, update.Version)
+		}
 	}
-	fmt.Printf("New version of tweet %q is now %d\n", update.Id, update.Version)
-
 	// ...
 
 	// Delete an index.
