@@ -32,6 +32,7 @@ metadata:
   namespace: kube-system
   annotations:
     prometheus.io/scrape2: "true"
+    cloud.google.com/load-balancer-type: "Internal"
 spec:
   selector:
     app: "hello-go2"
