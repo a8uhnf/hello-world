@@ -2,7 +2,6 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: hello-go2
-  namespace: kube-system
   labels: 
     app: hello-go2
 spec:
@@ -24,12 +23,20 @@ spec:
         ports:
         - name: hello
           containerPort: 8087
+        livenessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /hello
+            port: 8087
+          initialDelaySeconds: 30
+          periodSeconds: 3
+          successThreshold: 1
+          timeoutSeconds: 3
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name: "go-svc2"
-  namespace: kube-system
   annotations:
     prometheus.io/scrape2: "true"
     cloud.google.com/load-balancer-type: "Internal"
@@ -40,6 +47,6 @@ spec:
     - protocol: "TCP"
       port: 80
       targetPort: 8087
-  type: LoadBalancer
+  type: ClusterIP
 
 

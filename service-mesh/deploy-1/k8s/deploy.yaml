@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: deploy-1
+  labels: 
+    app: deploy-1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: deploy-1
+  template:
+    metadata:
+      labels:
+        app: deploy-1
+      annotations:
+        prometheus.io/scrape2: "true"
+    spec:
+      containers:
+      - name: deploy-1
+        image: a8uhnf/envoy-mesh:deploy-1
+        imagePullPolicy: Always
+        env:
+          - name: CONSUL_PATH
+            value: "deploy-1"
+          - name: CONSUL_URL
+            value: "35.221.128.208:8500"
+        ports:
+        - name: hello
+          containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: "deploy-1"
+spec:
+  selector:
+    app: "deploy-1"
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
