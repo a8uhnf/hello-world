@@ -18,7 +18,7 @@ spec:
       containers:
       - name: hello-world
         image: a8uhnf/go:1.0
-        imagePullPOlicy: Always
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
           name: web
