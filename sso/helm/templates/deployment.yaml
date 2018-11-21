@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{.Values.name}}
+  labels: 
+    app: {{.Values.name}}
+spec:
+  replicas: {{.Values.replicas}}
+  selector:
+    matchLabels:
+      app: {{.Values.name}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.name}}
+      annotations:
+        prometheus.io/scrape2: "true"
+    spec:
+      containers:
+      - name: {{.Values.name}}
+        image: a8uhnf/sso-app:1.0
+        imagePullPolicy: Always
+        env:
+        - name: APP
+          value: {{.Values.name}}
+        ports:
+        - name: hello
+          containerPort: 8080
+        livenessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /hello
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 3
+          successThreshold: 1
+          timeoutSeconds: 3
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{.Values.name}}
+
+spec:
+  selector:
+    app: "{{.Values.name}}"
+  ports:
+    - protocol: "TCP"
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
+
+
