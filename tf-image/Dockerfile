@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM a8uhnf/kubectl:v1.9.0
 MAINTAINER "Abu Hanifa <a8u.han1fa@gmail.com>"
 
 ENV TERRAFORM_VERSION=0.11.10
