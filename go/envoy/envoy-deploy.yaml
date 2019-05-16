@@ -1,3 +1,4 @@
+
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -17,6 +18,28 @@ spec:
         prometheus.io/scrape2: "true"
     spec:
       containers:
+      - name: envoyproxy
+        image: envoyproxy/envoy:latest
+        imagePullPolicy: IfNotPresent
+        args:
+        - -c
+        - /etc/envoy-config/config.yaml
+        - -l
+        - info
+        - --service-cluster
+        - go-svc2-cluster
+        - --service-node
+        - go-svc2-node
+        - --log-format
+        - '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'
+        command:
+        - /usr/local/bin/envoy
+        volumeMounts:
+        - mountPath: /etc/envoy-config/
+          name: envoy-config-volume
+        ports:
+        - containerPort: 8080
+          name: envoyproxy
       - name: hello-go2
         image: a8uhnf/go:3.0
         imagePullPolicy: Always
@@ -32,6 +55,14 @@ spec:
           periodSeconds: 3
           successThreshold: 1
           timeoutSeconds: 3
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: sidecar-config
+            path: config.yaml
+          name: sidecar-config
+        name: envoy-config-volume
 ---
 kind: Service
 apiVersion: v1
@@ -46,9 +77,9 @@ spec:
     - protocol: "TCP"
       port: 80
       targetPort: 8087
+      name: default
     - protocol: "TCP"
       port: 8080
       targetPort: 8080
+      name: sidecar
   type: ClusterIP
-
-
