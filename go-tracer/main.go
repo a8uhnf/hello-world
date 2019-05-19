@@ -1,21 +1,16 @@
 package main
 
 import (
-	"os"
-	"runtime/trace"
+	"net/http"
+	_ "net/http/pprof"
 )
 
 func main() {
-	trace.Start(os.Stderr)
-	defer trace.Stop()
-	// create new channel of type int
-	ch := make(chan int)
+	http.Handle("/hello", http.HandlerFunc(helloHandler))
 
-	// start new anonymous goroutine
-	go func() {
-		// send 42 to channel
-		ch <- 42
-	}()
-	// read from channel
-	<-ch
+	http.ListenAndServe("localhost:8181", http.DefaultServeMux)
+}
+
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("hello world!"))
 }
