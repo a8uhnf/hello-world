@@ -45,6 +45,7 @@ func middlewareOne(fn http.Handler) http.Handler {
 		ctx := r.Context()
 		chiCtx := chi.RouteContext(ctx)
 		fmt.Println(chi.URLParam(r, "id"))
+		fmt.Println(chi.URLParam)
 		fmt.Println("request URI", r.RequestURI)
 		fmt.Println(chiCtx.RoutePattern())
 
