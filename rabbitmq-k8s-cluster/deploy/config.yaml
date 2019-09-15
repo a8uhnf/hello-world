@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-cfg
+  namespace: example
+data:
+  RABBITMQ_VM_MEMORY_HIGH_WATERMARK: "0.6"
