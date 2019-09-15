@@ -20,6 +20,7 @@ spec:
     spec:
       serviceAccountName: rabbitmq
       terminationGracePeriodSeconds: 10
+
       containers:        
       - name: rabbitmq
         image: a8uhnf/rabbitmq-cluster:0.0.1
@@ -42,10 +43,21 @@ spec:
                 fieldPath: metadata.namespace
           - name: RABBITMQ_USE_LONGNAME
             value: "true"
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          - name: K8S_SERVICE_NAME
+            value: "rabbitmq-internal"
+          - name: MY_POD_SERVICE_ACCOUNT
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.serviceAccountName
           - name: RABBITMQ_BASIC_AUTH
             value: "guest"
           - name: RABBITMQ_NODENAME
-            value: "rabbit@$(HOSTNAME).rabbitmq-internal.$(NAMESPACE).svc.cluster.local"
+            value: rabbit@$(MY_POD_NAME).$(K8S_SERVICE_NAME).$(NAMESPACE).svc.cluster.local
           - name: K8S_SERVICE_NAME
             value: "rabbitmq-internal"
           - name: RABBITMQ_DEFAULT_USER
@@ -67,30 +79,12 @@ spec:
             cpu: "0.6"
         livenessProbe:
           exec:
-            command:
-              - /bin/sh
-              - -c
-              - >
-                curl -H "Authorization: Basic ${RABBITMQ_BASIC_AUTH}" http://localhost:15672/api/aliveness-test/%2F
+            command: ["rabbitmqctl", "status"]
           initialDelaySeconds: 15
           periodSeconds: 5
         readinessProbe:
           exec:
-            command:
-              - /bin/sh
-              - -c
-              - > 
-                curl -H "Authorization: Basic ${RABBITMQ_BASIC_AUTH}" http://localhost:15672/api/aliveness-test/%2F
+            command: ["rabbitmqctl", "status"]
           initialDelaySeconds: 15
           periodSeconds: 5
-        lifecycle:
-          postStart:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - >
-                  until rabbitmqctl --erlang-cookie ${RABBITMQ_ERLANG_COOKIE} node_health_check; do sleep 1; done;
-                  rabbitmqctl --erlang-cookie ${RABBITMQ_ERLANG_COOKIE} set_policy ha-all "" '{"ha-mode":"all", "ha-sync-mode": "automatic"}';
-        
         
