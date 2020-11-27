@@ -20,6 +20,4 @@ RUN apt-get -y update
 
 RUN apt-get install -y docker-ce docker-ce-cli containerd.io
 
-RUN chown 777 /var/run/docker.sock
-
 RUN docker version
