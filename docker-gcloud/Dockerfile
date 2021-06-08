@@ -18,6 +18,8 @@ RUN add-apt-repository \
 
 RUN apt-get -y update
 
-RUN apt-get install -y docker-ce docker-ce-cli containerd.io
+RUN apt-get install -y docker-ce docker-ce-cli containerd.io jq
 
 RUN docker version
+
+RUN apt-get -y update
