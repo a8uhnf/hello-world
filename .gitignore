@@ -1,1 +1,6 @@
 .idea/
+sticker-driver-storage-admin.json
+./gcp-bucket-for-image/pkey.cert
+third_party
+
+*.shp
