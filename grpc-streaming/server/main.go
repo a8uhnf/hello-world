@@ -21,8 +21,13 @@ var cnt = 0
 
 var userId int64 = 0
 
+func init() {
+	mp = make(map[int64]chan string)
+}
+
 func (e *EchoServiceHandler) Echo(ctx context.Context, request *api.EchoRequest) (*api.EchoResponse, error) {
 
+	log.Println("sending message to user_id: ", request.UserId)
 	if _, ok := mp[request.UserId]; !ok {
 		return nil, fmt.Errorf("user_id not valid")
 	}
@@ -52,7 +57,7 @@ func (e *EchoServiceHandler) ServerStreamingEcho(request *api.ServerStreamingEch
 	ch := make(chan string, 100)
 	id := userId
 	userId++
-	mp = make(map[int64]chan string)
+
 
 	mp[id] = ch
 
