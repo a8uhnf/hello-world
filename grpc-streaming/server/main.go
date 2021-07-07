@@ -15,16 +15,27 @@ type EchoServiceHandler struct {
 	api.UnimplementedEchoServiceServer
 }
 
+var cnt = 0
+
 func (e *EchoServiceHandler) Echo(ctx context.Context, request *api.EchoRequest) (*api.EchoResponse, error) {
-	return &api.EchoResponse{}, nil
+	cnt++
+	return &api.EchoResponse{
+		Message:      request.Message,
+		MessageCount: int32(cnt),
+	}, nil
 }
 
 func (e *EchoServiceHandler) EchoAbort(ctx context.Context, request *api.EchoRequest) (*api.EchoResponse, error) {
-	panic("implement me")
+	cnt = 0
+
+	return &api.EchoResponse{
+		Message:      "aborted",
+		MessageCount: 0,
+	}, nil
 }
 
 func (e *EchoServiceHandler) NoOp(ctx context.Context, empty *api.Empty) (*api.Empty, error) {
-	panic("implement me")
+	return &api.Empty{}, nil
 }
 
 func (e *EchoServiceHandler) ServerStreamingEcho(request *api.ServerStreamingEchoRequest, server api.EchoService_ServerStreamingEchoServer) error {
