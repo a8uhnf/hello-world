@@ -23,6 +23,7 @@ message Empty {
 
 message EchoRequest {
   string message = 1;
+  int64 user_id = 2;
 }
 
 message EchoResponse {
@@ -48,6 +49,7 @@ message ServerStreamingEchoRequest {
 message ServerStreamingEchoResponse {
   // Response message.
   string message = 1;
+  int64 user_id = 2;
 }
 
 // Request type for client side streaming echo.

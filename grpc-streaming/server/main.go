@@ -15,13 +15,22 @@ type EchoServiceHandler struct {
 	api.UnimplementedEchoServiceServer
 }
 
+var mp map[int64]chan string
+
 var cnt = 0
 
+var userId int64 = 0
+
 func (e *EchoServiceHandler) Echo(ctx context.Context, request *api.EchoRequest) (*api.EchoResponse, error) {
-	cnt++
+
+	if _, ok := mp[request.UserId]; !ok {
+		return nil, fmt.Errorf("user_id not valid")
+	}
+	ch := mp[request.UserId]
+	ch <- request.Message
 	return &api.EchoResponse{
-		Message:      request.Message,
-		MessageCount: int32(cnt),
+		Message:      "sender successful",
+		// MessageCount: int32(cnt),
 	}, nil
 }
 
@@ -39,7 +48,64 @@ func (e *EchoServiceHandler) NoOp(ctx context.Context, empty *api.Empty) (*api.E
 }
 
 func (e *EchoServiceHandler) ServerStreamingEcho(request *api.ServerStreamingEchoRequest, server api.EchoService_ServerStreamingEchoServer) error {
-	panic("implement me")
+	log.Printf("fetch response for id : %s", request.Message)
+	ch := make(chan string, 100)
+	id := userId
+	userId++
+	mp = make(map[int64]chan string)
+
+	mp[id] = ch
+
+	log.Printf("user_id: %d", id)
+
+	cnt++
+
+	resp := api.ServerStreamingEchoResponse{
+		Message: "registered",
+		UserId:  id,
+	}
+	if err := server.Send(&resp); err != nil {
+		log.Printf("send error %v", err)
+	}
+
+	for {
+		select {
+		case v := <-ch:
+			fmt.Println(v)
+			resp := api.ServerStreamingEchoResponse{
+				Message: v,
+				UserId:  id,
+			}
+			if err := server.Send(&resp); err != nil {
+				log.Printf("send error %v", err)
+			}
+			log.Printf("send response to : %d", id)
+		}
+	}
+
+	// use wait group to allow process to be concurrent
+	// var wg sync.WaitGroup
+	// for i := 0; i < 5; i++ {
+	// 	wg.Add(1)
+	// 	go func(count int64) {
+	// 		defer wg.Done()
+	//
+	// 		//time sleep to simulate server process time
+	// 		time.Sleep(time.Duration(count) * time.Second)
+	// 		resp := api.ServerStreamingEchoResponse{
+	// 			Message: "hello world!!!!",
+	// 		}
+	// 		if err := server.Send(&resp); err != nil {
+	// 			log.Printf("send error %v", err)
+	// 		}
+	// 		log.Printf("finishing request number : %d", count)
+	// 	}(int64(i))
+	// }
+
+	// wg.Wait()
+	log.Printf("finished for user_id %d", id)
+	return nil
+
 }
 
 func (e *EchoServiceHandler) ServerStreamingEchoAbort(request *api.ServerStreamingEchoRequest, server api.EchoService_ServerStreamingEchoAbortServer) error {
