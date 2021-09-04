@@ -1,8 +1,8 @@
-FROM google/cloud-sdk:319.0.0-debian_component_based
+FROM google/cloud-sdk:355.0.0-debian_component_based
 
-RUN apt-get -y update
+RUN apt -y update
 
-RUN apt-get -y install \
+RUN apt -y install \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -16,10 +16,10 @@ RUN add-apt-repository \
    $(lsb_release -cs) \
    stable"
 
-RUN apt-get -y update
+RUN apt -y update
 
-RUN apt-get install -y docker-ce docker-ce-cli containerd.io jq
+RUN apt install -y docker-ce docker-ce-cli containerd.io jq
 
-RUN docker version
+# RUN docker version
 
-RUN apt-get -y update
+RUN apt -y update

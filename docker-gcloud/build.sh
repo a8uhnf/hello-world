@@ -6,5 +6,6 @@ tag=$(cat tag.txt)
 
 echo $tag
 
-docker build . -t a8uhnf/gcloud-docker
+docker build . -t a8uhnf/gcloud-docker:$tag
 
+docker push a8uhnf/gcloud-docker:$tag
